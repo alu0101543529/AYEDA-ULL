@@ -10,9 +10,11 @@
  * @date   30/01/2024
  * @brief  Implementación de la clase Lattice
  */
+#include <cassert>
+#include <fstream>
+
 #include "header_files/cell.h"
 #include "header_files/lattice.h"
-#include <cassert>
 
 /**
  * @brief Constructor del retículo.
@@ -80,14 +82,39 @@ int Lattice::DeadCells() {
 }
 
 /**
+ * @brief Método para poder cargar el retículo desde un fichero.
+ * @param[in] filename: referencia (constante) al nombre del fichero que se desea cargar.
+ */
+void Lattice::OpenFile(const std::string& filename) {
+  // Establecemos una variable como flujo de entrada de ficheros, pasandole como parámetros el fichero que deseamos abrir.
+  std::ifstream input_file(filename);
+  // Comprobamos si se ha abierto correctamente.
+  if (!(input_file.is_open())) {
+    std::cout << "Error: No se pudo abrir el fichero." << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  std::cout << "El fichero '" << filename << "' se ha cargado correctamente." << std::endl << std::endl;
+  
+  std::string input_lattice;
+  // Recogemos línea a línea el estado de las células insertadas, para posteriormente construir el retículo.
+  getline(input_file, input_lattice);
+  cells_.resize(input_lattice.size());
+
+  for (int i = 0; i < input_lattice.size(); i++) {
+    cells_[i] = Cell(Position(i), (input_lattice[i] - '0'));  // Se le resta '0' para conseguir el valor real, y no el valor char de la tabla ASCII
+  }
+}
+
+/**
  * @brief sobrecarga del operador de flujo de salida (<<) para la clase Lattice.
  * @param[in] os: referencia al objeto ostream (flujo de datos de salida).
  * @param[in] lattice: referencia (constante) del retículo a imprimir.
  * @return Devuelve la impresión del retículo.
  */
-std::ostream& operator<< (std::ostream& os, const Lattice& lattice) {
+std::ostream& operator<<(std::ostream& os, const Lattice& lattice) {
+  os << "[";
   for (int i = 0; i < lattice.getCells().size(); i++) { os << lattice.getCell(Position(i)); }
-  os << std::endl;
+  os << "]" << std::endl;
 
   return os;
 }

@@ -28,7 +28,7 @@ class State {
 
   //---------------SETTER---------------
   /// Setter para establecer el atributo "state_" que se recibe por parámetros.
-  void setState(const int& new_state) { state_ = new_state; }
+  //void setState(const int& new_state) { state_ = new_state; }
 
   //---------------------------SOBRECARGA DE OPERADORES ARITMÉTICOS---------------------------
   // Sobrecarga del operador de suma (+) para la clase State

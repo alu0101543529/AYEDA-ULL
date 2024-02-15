@@ -26,5 +26,5 @@ clean:
 	@echo "Limpiando..."
 	@rm -rf $(OBJDIR) $(BIN)
 
-run:
-	./automata_celular
+run_file:
+	./automata_celular -init data/lattice.txt

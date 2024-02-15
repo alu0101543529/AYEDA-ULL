@@ -32,10 +32,13 @@ State Cell::getState() const { return state_; }
 /**
  * @brief Método que establece un nuevo estado a la célula pasado por parámetros.
  * @param[in] new_state: referencia constante al nuevo estado de la célula.
+ * @return Devuelve el estado en el que se encontraba la célula previa a ser cambiado.
  */
 State Cell::setState(const State& new_state) { 
-  state_.setState(new_state.getState());
-  return state_;
+  State old_state;
+  old_state = state_;   // Guardamos el estado en una nueva variable para posteriormente devolverlo.
+  state_ = new_state;   // Actualizamos el estado al nuevo requerido.
+  return old_state;
 }
 
 /**

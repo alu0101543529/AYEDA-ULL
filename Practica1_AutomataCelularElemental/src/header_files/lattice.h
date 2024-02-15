@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <vector>
+
 #include "cell.h"
 
 class Cell;
@@ -62,6 +63,9 @@ class Lattice {
 
   // Método para calcular el número de células muertas en la generación actual en la que se encuentra el retículo.
   int DeadCells();
+
+  // Método para cargar un retículo desde un fichero.
+  void OpenFile(const std::string&);
 
  private:
   //----------------------ATRIBUTOS----------------------
