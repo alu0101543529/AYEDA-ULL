@@ -27,8 +27,8 @@ class State {
   int getState() const { return state_; }
 
   //---------------SETTER---------------
-  /// Setter para establecer el atributo "state_" que se recibe por parámetros.
-  //void setState(const int& new_state) { state_ = new_state; }
+  /// Setter para establecer el atributo "state_" a un estado nuevo introducido por el usuario por parámetros.
+  void setState(const int& new_state) { state_ = new_state; }
 
   //---------------------------SOBRECARGA DE OPERADORES ARITMÉTICOS---------------------------
   // Sobrecarga del operador de suma (+) para la clase State

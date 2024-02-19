@@ -26,7 +26,10 @@ class Cell;
 class Lattice {
  public:
   //-----------CONSTRUCTOR (PARAMETRIZADO)-----------
+  // Si se especifica un tamaño por línea de comandos
   Lattice(int = 1, std::string = "periodic", bool = false);
+  // Si se especifica un fichero por línea de comandos
+  Lattice(const std::string& filename, std::string = "periodic", bool = false);
 
   //------------------------------------GETTERS------------------------------------
   /// Getter para obtener las células de la respectiva posición dentro del retículo.

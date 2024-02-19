@@ -76,6 +76,7 @@ Lattice CommandLineArgs(int argc, char* argv[]) {
   std::string tipo_de_frontera;                 // Variable que almacena el tipo de frontera que tiene el retículo ("open" || "periodic")
   bool temperatura_de_la_frontera;              // Variable que almacena, en caso de ser forntera de tipo "open", la temperatura de las células exteriores ('0' || '1')
   std::string fichero_reticulo_personalizado;   // Variable que almacena el nombre del fichero que contiene el retículo a cargar
+  bool init_active = false;                     // Variable que almacena si se ha especificado un fichero
 
   // Parseamos la línea de comandos
   for (int i = 1; i < argc; i++) {
@@ -136,23 +137,21 @@ Lattice CommandLineArgs(int argc, char* argv[]) {
 
     // Opción -init: Se introduce un fichero que contiene el retículo a usar.
     else if (argumento_actual == "-init") {
+
       // Si no se especifica el fichero a cargar, mostramos un mensaje de error y la función que muestra el correcto funcionamiento.
       if ((i + 1) > argc) {
         std::cerr << "Falta el fichero para cargar una configuración del retículo." << std::endl << std::endl;
         Usage(argc, argv);
       }
-
+      init_active = true;
       fichero_reticulo_personalizado = std::string(argv[i + 1]);
-      Lattice reticulo_fichero;
-      reticulo_fichero.OpenFile(fichero_reticulo_personalizado);
-      return reticulo_fichero;
     }
   }
 
-  // Construimos el retículo con los parámetros recogidos según las opciones indicadas por línea de comandos
-  Lattice reticulo(tamaño, tipo_de_frontera, temperatura_de_la_frontera);
-
-  return reticulo;
+  // Si se ha especificado un fichero, construimos el retículo en función del fichero, junto con los parámetros recogidos según las opciones indicadas por línea de comandos, si los hubiese.
+  if (init_active) { return Lattice(fichero_reticulo_personalizado, tipo_de_frontera, temperatura_de_la_frontera); }
+  // Si no, construimos el retículo solamente con los parámetros recogidos según las opciones indicadas por línea de comandos
+  return Lattice (tamaño, tipo_de_frontera, temperatura_de_la_frontera);
 }
 
 

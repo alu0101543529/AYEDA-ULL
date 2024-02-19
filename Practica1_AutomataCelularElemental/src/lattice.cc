@@ -31,6 +31,34 @@ Lattice::Lattice(int size, std::string type_border, bool open_border_temperature
 }
 
 /**
+ * @brief Constructor del retículo mediante fichero.
+ * @param[in] filename: cadena de caracteres que representa el nombre del fichero que contiene el retículo.
+ * @param[in] type_border: cadena de caracteres que representa el tipo de frontera que tiene el retículo.
+ * @param[in] open_border_temperatura: booleano que representa, en caso de ser frontera abierta, el estado que tendran las células exteriores al retículo.
+ */
+Lattice::Lattice(const std::string& filename, std::string type_border, bool open_border_temperature) {
+  // Establecemos una variable como flujo de entrada de ficheros, pasandole como parámetros el fichero que deseamos abrir.
+  std::ifstream input_file(filename);
+  // Comprobamos si se ha abierto correctamente.
+  if (!(input_file.is_open())) {
+    std::cout << "Error: No se pudo abrir el fichero." << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  std::cout << "El fichero '" << filename << "' se ha cargado correctamente." << std::endl << std::endl;
+  
+  std::string input_lattice;
+  // Recogemos línea a línea el estado de las células insertadas, para posteriormente construir el retículo.
+  getline(input_file, input_lattice);
+  cells_.resize(input_lattice.size());
+  type_border_ = type_border;
+  open_border_temperature_ = open_border_temperature;
+
+  for (int i = 0; i < input_lattice.size(); i++) {
+    cells_[i] = Cell(Position(i), (input_lattice[i] - '0'));  // Se le resta '0' para conseguir el valor real, y no el valor char de la tabla ASCII
+  }
+}
+
+/**
  * @brief Método que establece la configuración inicial del retículo.
  */
 void Lattice::InitialSetting() {
