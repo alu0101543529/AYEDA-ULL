@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.s": "mips",
+    "cassert": "cpp"
+  },
+  "C_Cpp.errorSquiggles": "enabled"
+}
