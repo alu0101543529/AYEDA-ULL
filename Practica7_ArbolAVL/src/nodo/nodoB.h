@@ -24,6 +24,7 @@ class nodoB {
 
   //---------------------------------CONSTRUCTOR (POR PARÁMETROS)---------------------------------
   nodoB(nodoB<Key>* left, nodoB<Key>* right, Key data) : left_(left), right_(right), data_(data) {}
+  nodoB(Key data) : left_(nullptr), right_(nullptr), data_(data) {}
 
   //--------------------GETTERS--------------------
   /// Método para obtener el valor del nodo
@@ -37,6 +38,14 @@ class nodoB {
   nodoB<Key>* getRight() const { return right_; }
   nodoB<Key>*& getRight() { return right_; }
 
+  //------------------------------MÉTODOS I/O------------------------------
+  /// Método para imprimir el nodo
+  virtual std::ostream& print(std::ostream& os) const;
+
+  /// Sobrecarga del operador de inserción (<<) para la impresión del nodo
+  template <class Keyy>
+  friend std::ostream& operator<<(std::ostream& os, const nodoB<Keyy>* node);
+
  protected:
   //----ATRIBUTOS----
   /// data_: valor de tipo Key que representa el dato que se almacena en el nodo.
@@ -46,3 +55,29 @@ class nodoB {
   /// right_: puntero a un nodo de tipo Key que representa el hijo derecho del nodo.
   nodoB<Key>* right_;
 };
+
+/**
+ * @brief Método para imprimir el nodo
+ * @param[in] os: referencia al objeto ostream (flujo de datos de salida)
+ */
+template <class Key>
+std::ostream& nodoB<Key>::print(std::ostream& os) const {
+  os << "[" << data_ << "]";
+  return os;
+}
+
+/**
+ * @brief Sobrecarga del operador de inserción (<<) para la impresión del nodo
+ * @param[in] os: referencia al objeto ostream (flujo de datos de salida)
+ * @param[in] node: puntero al nodo que se va a imprimir
+ * @return Devuelve la impresión del nodo
+ */
+template <class Key>
+std::ostream& operator<<(std::ostream& os, const nodoB<Key>* node) {
+  if (node == nullptr) {
+    os << "[.]";
+    return os;
+  }
+  node->print(os);
+  return os;
+}

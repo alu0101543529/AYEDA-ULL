@@ -19,32 +19,26 @@
 template <class Key>
 class nodoAVL : public nodoB<Key> {
  public:
-  //--------------CONSTRUCTOR (POR DEFECTO)--------------
-  nodoAVL() : left_(nullptr), right_(nullptr), data_(-1), balance_(0) {}
+  //-------CONSTRUCTOR (POR DEFECTO)-------
+  nodoAVL() : nodoB<Key>(), balance_(0) {}
 
-  //---------------------------------CONSTRUCTOR (POR PARÁMETROS)---------------------------------
-  nodoAVL(nodoAVL<Key>* left, nodoAVL<Key>* right, Key data, int balance) : left_(left), right_(right), data_(data), balance_(balance) {}
+  //-----------------------------------------------CONSTRUCTOR (POR PARÁMETROS)-----------------------------------------------
+  nodoAVL(nodoAVL<Key>* left, nodoAVL<Key>* right, Key data, int balance) : nodoB<Key>(left, right, data), balance_(balance) {}
+  nodoAVL(Key data) : nodoB<Key>(data), balance_(0) {}
 
   //------------------GETTER------------------
   /// Método para obtener el factor de balanceo del nodo
   int getBalance() const { return balance_; }
+  void setBalance(int balance) { balance_ = balance; }
 
-  /// Método para obtener el hijo izquierdo del nodo
-  nodoAVL<Key>* getLeft() const { return left_; }
-  nodoAVL<Key>*& getLeft() { return left_; }
-
-  /// Método para obtener el hijo derecho del nodo
-  nodoAVL<Key>* getRight() const { return right_; }
-  nodoAVL<Key>*& getRight() { return right_; }
+  //---------------------------MÉTODO I/O---------------------------
+  std::ostream& print(std::ostream& os) const override {
+    os << "[" << nodoB<Key>::data_ << "]" << "(" << balance_ << ")";
+    return os;
+  }
 
  private:
-  //----ATRIBUTOS----
-  /// data_: valor de tipo Key que representa el dato que se almacena en el nodo.
-  Key data_;
+  //--ATRIBUTO--
   /// balance_: valor entero que representa el factor de balanceo del nodo.
   int balance_;
-  /// left_: puntero a un nodo de tipo Key que representa el hijo izquierdo del nodo.
-  nodoAVL<Key>* left_;
-  /// right_: puntero a un nodo de tipo Key que representa el hijo derecho del nodo.
-  nodoAVL<Key>* right_;
 };

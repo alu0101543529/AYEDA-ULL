@@ -45,6 +45,9 @@ class AB {
   /// Método para realizar un recorrido en inorden del árbol
   void inorder() const;
 
+  /// Método polimórfico para imprimir el árbol
+  virtual std::ostream& print(std::ostream&, const AB<Key>*) const;
+
   /// Sobrecarga del operador de inserción del flujo de entrada (<<) usando un recorrido por niveles
   template <class Keyy>
   friend std::ostream& operator<<(std::ostream&, const AB<Keyy>*);
@@ -93,12 +96,13 @@ void AB<Key>::inorder() const {
 }
 
 template <class Key>
-std::ostream& operator<<(std::ostream& os, const AB<Key>* tree) {
+std::ostream& AB<Key>::print(std::ostream& os, const AB<Key>* tree) const {
   // En caso de que contenga nodos, se realiza un recorrido por niveles, usando una cola de pares para almacenar los nodos, junto con su nivel.
   std::queue<NodeLevel<Key>> queue;
   queue.push(NodeLevel(tree->root_, 0));
   int actual_level = -1;
 
+  
   // Mientras la cola no esté vacía...
   while (!queue.empty()) {
     // Se extrae un nodo de la cola y se imprime su valor.
@@ -114,11 +118,11 @@ std::ostream& operator<<(std::ostream& os, const AB<Key>* tree) {
 
     // Si el nodo es nulo, se imprime un vacío, y se continúa con el siguiente nodo.
     if (node.node_ == nullptr) {
-      os << "[.]";
+      os << node.node_;
       continue;
     }
 
-    os << "[" << node.node_->getData() << "]";
+    os << node.node_;
 
     // Se añaden los hijos del nodo a la cola (si existen) empezando por el hijo izquierdo y siguiendo por el derecho.
     queue.push(NodeLevel<Key>(node.node_->getLeft(), (node.level_ + 1)));
@@ -127,5 +131,11 @@ std::ostream& operator<<(std::ostream& os, const AB<Key>* tree) {
 
   os << std::endl;
 
+  return os;
+}
+
+template <class Key>
+std::ostream& operator<<(std::ostream& os, const AB<Key>* tree) {
+  tree->print(os, tree);
   return os;
 }
