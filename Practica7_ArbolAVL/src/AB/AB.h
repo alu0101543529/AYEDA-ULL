@@ -3,11 +3,11 @@
  * Escuela Superior de Ingeniería y Tecnología
  * Grado en Ingeniería Informática
  * Algoritmos y Estructuras de Datos Avanzadas
- * Práctica 6: TAD Árbol
+ * Práctica 7: Árbol AVL
 
  * @file   AB.h
  * @author Raúl Gonzalez Acosta (alu0101543529@ull.edu.es)
- * @date   08/04/2024
+ * @date   15/04/2024
  * @brief  Declaración de la clase abstracta AB (Árbol Binario)
  */
 
