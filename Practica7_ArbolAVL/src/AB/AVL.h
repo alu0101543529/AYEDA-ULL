@@ -34,29 +34,29 @@ class AVL : public ABB<Key> {
 
   //----------------MÉTODOS----------------
   /// Método para insertar un nodo en el árbol
-  virtual bool insert(const Key&) override;
+  virtual bool insert(const Key&, bool) override;
 
   /// Método para buscar un nodo en el árbol
   virtual bool search(const Key&) const override;
 
  private:
+  //--------------------MÉTODOS AVL--------------------
   /// Método para insertar un nodo AVL en el árbol, haciendo un rebalanceo si es necesario
-  bool InsertAVL(nodoAVL<Key>*&, nodoAVL<Key>*, bool&);
-
-  //-------------MÉTODOS-------------
-  /// Método de rotación izquierda-izquierda del árbol
-  void rotateLeftLeft(nodoAVL<Key>*&);
-  /// Método de rotación derecha-derecha del árbol
-  void rotateRightRight(nodoAVL<Key>*&);
-  /// Método de rotación izquierda-derecha del árbol
-  void rotateLeftRight(nodoAVL<Key>*&);
-  /// Método de rotación derecha-izquierda del árbol
-  void rotateRightLeft(nodoAVL<Key>*&);
+  bool InsertAVL(nodoAVL<Key>*&, nodoAVL<Key>*, bool&, bool);
 
   /// Método de rebalanceo del árbol tras insertar un nodo en la rama izquierda
-  void ReBalanceLeft (nodoAVL<Key>*&, bool&);
+  void ReBalanceLeft (nodoAVL<Key>*&, bool&, bool);
   /// Método de rebalanceo del árbol tras insertar un nodo en la rama derecha
-  void ReBalanceRight (nodoAVL<Key>*&, bool&);
+  void ReBalanceRight (nodoAVL<Key>*&, bool&, bool);
+
+  /// Método de rotación izquierda-izquierda del árbol
+  void rotateLeftLeft(nodoAVL<Key>*&, bool);
+  /// Método de rotación derecha-derecha del árbol
+  void rotateRightRight(nodoAVL<Key>*&, bool);
+  /// Método de rotación izquierda-derecha del árbol
+  void rotateLeftRight(nodoAVL<Key>*&, bool);
+  /// Método de rotación derecha-izquierda del árbol
+  void rotateRightLeft(nodoAVL<Key>*&, bool);
 };
 
 /**
@@ -65,46 +65,10 @@ class AVL : public ABB<Key> {
  * @return Devuelve true si el nodo ha sido insertado correctamente, false en caso contrario
  */
 template <class Key>
-bool AVL<Key>::insert(const Key& key) {
+bool AVL<Key>::insert(const Key& key, bool trace) {
   nodoAVL<Key>* new_node = new nodoAVL<Key>(key);
   bool grow = false;
-  if (InsertAVL(reinterpret_cast<nodoAVL<Key>*&>(AB<Key>::root_), new_node, grow)) { return true; }
-  return false;
-}
-
-/**
- * @brief Método para insertar un nodo AVL en el árbol, haciendo un rebalanceo si es necesario
- * @param[in] root: referencia (constante) al nodo raíz del árbol
- * @param[in] new_node: puntero al nodo AVL que se va a insertar
- * @param[in] grow: referencia (constante) a un booleano que indica si el árbol ha crecido
- */
-template <class Key>
-bool AVL<Key>::InsertAVL(nodoAVL<Key>*& root, nodoAVL<Key>* new_node, bool& grow) {
-  // Si el árbol está vacío, se inserta el nodo en la raíz
-  if (root == nullptr) {
-    root = new_node;
-    grow = true;
-    return true;
-  }
-
-  // Si la clave es menor que la del nodo actual, se inserta en el subárbol izquierdo
-  else if (new_node->getData() < root->getData()) {
-    InsertAVL(root->getLeft(), new_node, grow);
-    // Si el árbol ha crecido, se rebalancea
-    if (grow) { ReBalanceLeft(root, grow); }
-
-    return true;
-  }
-
-  // Si la clave es mayor que la del nodo actual, se inserta en el subárbol derecho
-  else if (new_node->getData() > root->getData()) {
-    InsertAVL(root->getRight(), new_node, grow);
-    // Si el árbol ha crecido, se rebalancea
-    if (grow) { ReBalanceRight(root, grow); }
-
-    return true;
-  }
-
+  if (InsertAVL(reinterpret_cast<nodoAVL<Key>*&>(AB<Key>::root_), new_node, grow, trace)) { return true; }
   return false;
 }
 
@@ -136,11 +100,117 @@ bool AVL<Key>::search(const Key& key) const {
 }
 
 /**
+ * @brief Método para insertar un nodo AVL en el árbol, haciendo un rebalanceo si es necesario
+ * @param[in] root: referencia (constante) al nodo raíz del árbol
+ * @param[in] new_node: puntero al nodo AVL que se va a insertar
+ * @param[in] grow: referencia (constante) a un booleano que indica si el árbol ha crecido
+ */
+template <class Key>
+bool AVL<Key>::InsertAVL(nodoAVL<Key>*& root, nodoAVL<Key>* new_node, bool& grow, bool trace) {
+  // Si el árbol está vacío, se inserta el nodo en la raíz
+  if (root == nullptr) {
+    root = new_node;
+    grow = true;
+    return true;
+  }
+
+  // Si la clave es menor que la del nodo actual, se inserta en el subárbol izquierdo
+  else if (new_node->getData() < root->getData()) {
+    InsertAVL(root->getLeft(), new_node, grow, trace);
+    // Si el árbol ha crecido, se rebalancea
+    if (grow) { ReBalanceLeft(root, grow, trace); }
+
+    return true;
+  }
+
+  // Si la clave es mayor que la del nodo actual, se inserta en el subárbol derecho
+  else if (new_node->getData() > root->getData()) {
+    InsertAVL(root->getRight(), new_node, grow, trace);
+    // Si el árbol ha crecido, se rebalancea
+    if (grow) { ReBalanceRight(root, grow, trace); }
+
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * @brief Método de rebalanceo del árbol tras insertar un nodo en la rama izquierda
+ * @param[in] root_: referencia (constante) al nodo raíz del árbol
+ * @param[in] grow: referencia (constante) a un booleano que indica si el árbol ha crecido
+ */
+template <class Key>
+void AVL<Key>::ReBalanceLeft(nodoAVL<Key>*& root, bool& grow, bool trace) {
+  switch (root->getBalance()) {
+    // Si el factor de balanceo es -1, se establece a 0 y se indica que el árbol no ha crecido
+    case -1: {
+      root->setBalance(0);
+      grow = false;
+      break;
+    }
+    // Si el factor de balanceo es 0, se establece a 1
+    case 0: {
+      root->setBalance(1);
+      break;
+    }
+    // Si el factor de balanceo es 1, se realiza una rotación
+    case 1: {
+      nodoAVL<Key>* aux_node = root->getLeft();
+
+      // Si el factor de balanceo del hijo izquierdo es 1, se realiza una rotación izquierda-izquierda
+      if (aux_node->getBalance() == 1) { rotateLeftLeft(root, trace); }
+      // En otro caso, se realiza una rotación izquierda-derecha
+      else { rotateLeftRight(root, trace);}
+
+      grow = false;
+      break;
+    }
+  }
+}
+
+/**
+ * @brief Método de rebalanceo del árbol tras insertar un nodo en la rama derecha
+ * @param[in] root_: referencia (constante) al nodo raíz del árbol
+ * @param[in] grow: referencia (constante) a un booleano que indica si el árbol ha crecido
+ */
+template <class Key>
+void AVL<Key>::ReBalanceRight(nodoAVL<Key>*& root, bool& grow, bool trace) {  
+  switch (root->getBalance()) {
+    // Si el factor de balanceo es 1, se establece a 0 y se indica que el árbol no ha crecido
+    case 1: {
+      root->setBalance(0);
+      grow = false;
+      break;
+    }
+    // Si el factor de balanceo es 0, se establece a -1
+    case 0: {
+      root->setBalance(-1);
+      break;
+    }
+    // Si el factor de balanceo es -1, se realiza una rotación
+    case -1: {
+      nodoAVL<Key>* aux_node = root->getRight();
+
+      // Si el factor de balanceo del hijo derecho es -1, se realiza una rotación derecha-derecha
+      if (aux_node->getBalance() == -1) { rotateRightRight(root, trace); }
+      // En otro caso, se realiza una rotación derecha-izquierda
+      else { rotateRightLeft(root, trace); }
+
+      grow = false;
+      break;
+    }
+  }
+}
+
+/**
  * @brief Método de rotación izquierda-izquierda del árbol
  * @param[in] node: puntero al nodo que se va a rotar
  */
 template <class Key>
-void AVL<Key>::rotateLeftLeft(nodoAVL<Key>*& node) {  
+void AVL<Key>::rotateLeftLeft(nodoAVL<Key>*& node, bool trace) {
+  if (trace) { std::cout << "Realizando una rotación izquierda-izquierda desde el nodo " << node << "..." << std::endl; }
+
   nodoAVL<Key>* aux_node = node->getLeft();
   node->setLeft(aux_node->getRight());
   aux_node->setRight(node);
@@ -163,7 +233,9 @@ void AVL<Key>::rotateLeftLeft(nodoAVL<Key>*& node) {
  * @param[in] node: puntero al nodo que se va a rotar
  */
 template <class Key>
-void AVL<Key>::rotateRightRight(nodoAVL<Key>*& node) {
+void AVL<Key>::rotateRightRight(nodoAVL<Key>*& node, bool trace) {
+  if (trace) { std::cout << "Realizando una rotación derecha-derecha desde el nodo " << node << "..." << std::endl; }
+
   nodoAVL<Key>* aux = node->getRight();
   node->setRight(aux->getLeft());
   aux->setLeft(node);
@@ -186,7 +258,9 @@ void AVL<Key>::rotateRightRight(nodoAVL<Key>*& node) {
  * @param[in] node: puntero al nodo que se va a rotar
  */
 template <class Key>
-void AVL<Key>::rotateLeftRight(nodoAVL<Key>*& node) {
+void AVL<Key>::rotateLeftRight(nodoAVL<Key>*& node, bool trace) {
+  if (trace) { std::cout << "Realizando una rotación izquierda-derecha desde el nodo " << node << "..." << std::endl; }
+
   nodoAVL<Key>* aux_node = node->getLeft();
   nodoAVL<Key>* aux_node2 = aux_node->getRight();
   node->setLeft(aux_node2->getRight());
@@ -210,7 +284,9 @@ void AVL<Key>::rotateLeftRight(nodoAVL<Key>*& node) {
  * @param[in] node: puntero al nodo que se va a rotar
  */
 template <class Key>
-void AVL<Key>::rotateRightLeft(nodoAVL<Key>*& node) {
+void AVL<Key>::rotateRightLeft(nodoAVL<Key>*& node, bool trace) {
+  if (trace) { std::cout << "Realizando una rotación derecha-izquierda desde el nodo " << node << "..." << std::endl; }
+
   nodoAVL<Key>* aux_node = node->getRight();
   nodoAVL<Key>* aux_node2 = aux_node->getLeft();
   node->setRight(aux_node2->getLeft());
@@ -227,72 +303,4 @@ void AVL<Key>::rotateRightLeft(nodoAVL<Key>*& node) {
 
   aux_node2->setBalance(0);
   node = aux_node2;
-}
-
-/**
- * @brief Método de rebalanceo del árbol tras insertar un nodo en la rama izquierda
- * @param[in] root_: referencia (constante) al nodo raíz del árbol
- * @param[in] grow: referencia (constante) a un booleano que indica si el árbol ha crecido
- */
-template <class Key>
-void AVL<Key>::ReBalanceLeft(nodoAVL<Key>*& root, bool& grow) {
-  switch (root->getBalance()) {
-    // Si el factor de balanceo es -1, se establece a 0 y se indica que el árbol no ha crecido
-    case -1: {
-      root->setBalance(0);
-      grow = false;
-      break;
-    }
-    // Si el factor de balanceo es 0, se establece a 1
-    case 0: {
-      root->setBalance(1);
-      break;
-    }
-    // Si el factor de balanceo es 1, se realiza una rotación
-    case 1: {
-      nodoAVL<Key>* aux_node = root->getLeft();
-
-      // Si el factor de balanceo del hijo izquierdo es 1, se realiza una rotación izquierda-izquierda
-      if (aux_node->getBalance() == 1) { rotateLeftLeft(root); }
-      // En otro caso, se realiza una rotación izquierda-derecha
-      else { rotateLeftRight(root);}
-
-      grow = false;
-      break;
-    }
-  }
-}
-
-/**
- * @brief Método de rebalanceo del árbol tras insertar un nodo en la rama derecha
- * @param[in] root_: referencia (constante) al nodo raíz del árbol
- * @param[in] grow: referencia (constante) a un booleano que indica si el árbol ha crecido
- */
-template <class Key>
-void AVL<Key>::ReBalanceRight(nodoAVL<Key>*& root, bool& grow) {  
-  switch (root->getBalance()) {
-    // Si el factor de balanceo es 1, se establece a 0 y se indica que el árbol no ha crecido
-    case 1: {
-      root->setBalance(0);
-      grow = false;
-      break;
-    }
-    // Si el factor de balanceo es 0, se establece a -1
-    case 0: {
-      root->setBalance(-1);
-      break;
-    }
-    // Si el factor de balanceo es -1, se realiza una rotación
-    case -1: {
-      nodoAVL<Key>* aux_node = root->getRight();
-
-      // Si el factor de balanceo del hijo derecho es -1, se realiza una rotación derecha-derecha
-      if (aux_node->getBalance() == -1) { rotateRightRight(root); }
-      // En otro caso, se realiza una rotación derecha-izquierda
-      else { rotateRightLeft(root); }
-
-      grow = false;
-      break;
-    }
-  }
 }

@@ -26,7 +26,7 @@ class ABE : public AB<Key> {
 
   //----------------MÉTODOS----------------
   /// Método para insertar un nodo en el árbol
-  virtual bool insert(const Key&) override;
+  virtual bool insert(const Key&, bool) override;
 
   /// Método para buscar un nodo en el árbol
   virtual bool search(const Key&) const override;
@@ -42,7 +42,7 @@ class ABE : public AB<Key> {
  * @return Devuelve true si el nodo ha sido insertado correctamente, false en caso contrario
  */
 template <class Key>
-bool ABE<Key>::insert(const Key& key) {
+bool ABE<Key>::insert(const Key& key, bool trace) {
   // En caso de que la clave ya exista en el árbol, no se inserta
   if (search(key)) { return false; }
 

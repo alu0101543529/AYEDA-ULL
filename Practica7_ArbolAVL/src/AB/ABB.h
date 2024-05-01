@@ -26,7 +26,7 @@ class ABB : public AB<Key> {
 
   //----------------MÉTODOS----------------
   /// Método para insertar un nodo en el árbol
-  virtual bool insert(const Key&) override;
+  virtual bool insert(const Key&, bool) override;
 
   /// Método para buscar un nodo en el árbol
   virtual bool search(const Key&) const override;
@@ -38,7 +38,7 @@ class ABB : public AB<Key> {
  * @return Devuelve true si el nodo ha sido insertado correctamente, false en caso contrario
  */
 template <class Key>
-bool ABB<Key>::insert(const Key& key) {
+bool ABB<Key>::insert(const Key& key, bool trace) {
   // Si el árbol está vacío, insertamos el nodo como raíz (con sus respectivos hijos nulos)
   if (AB<Key>::root_ == nullptr) {
     AB<Key>::root_ = new nodoB<Key>(nullptr, nullptr, key);

@@ -51,7 +51,9 @@ class nodoAVL : public nodoB<Key> {
   //---------------------------MÉTODO I/O---------------------------
   /// Método para imprimir el nodo AVL
   std::ostream& print(std::ostream& os) const override {
-    os << "[" << nodoB<Key>::data_ << "]" << "(" << balance_ << ")";
+    os << "[" << nodoB<Key>::data_;
+    if (true) { os << "(" << balance_ << ")"; }
+    os << "]";
     return os;
   }
 

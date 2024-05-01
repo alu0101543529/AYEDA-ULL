@@ -37,7 +37,7 @@ class AB {
 
   //----------------MÉTODOS----------------
   /// Método polimórfico para insertar un nodo en el árbol
-  virtual bool insert(const Key&) = 0;
+  virtual bool insert(const Key&, bool) = 0;
 
   /// Método polimórfico para buscar un nodo en el árbol
   virtual bool search(const Key&) const = 0;

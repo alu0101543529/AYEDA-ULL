@@ -23,7 +23,7 @@
  * @param[in] argv: variable para recoger los argumentos por línea de comandos.
  */
 void Usage(char* argv[]) {
-  std::cout << "Modo de uso: " << argv[0] << " [-h | --help ] -ab <'abb'|'abe'|'avl'> -init <'manual'|'random' <nº elementos a generar> |'file' <nº elementos a generar> <nombre del fichero>>" << std::endl << std::endl;
+  std::cout << "Modo de uso: " << argv[0] << " [-h | --help ] -ab <'abb'|'abe'|'avl'> -init <'manual'|'random' <nº elementos a generar> |'file' <nº elementos a generar> <nombre del fichero>> -trace <'y'|'n'>" << std::endl << std::endl;
   std::cout << "-h | --help: Muestra las instrucciones para el correcto funcionamiento del programa." << std::endl;
   std::cout << "-ab: Con esta opción se indica el tipo de árbol a utilizar (ABB o ABE)." << std::endl;
   std::cout << "\tÁrbol Binario de Búsqueda (ABB): es un tipo de árbol en el que las claves/llaves se ordenan de menor (subárbol izquierdo) a mayor (subárbol derecho) con respecto a la raíz." << std::endl;
@@ -33,6 +33,7 @@ void Usage(char* argv[]) {
   std::cout << "\tInicialización manual ('manual'): se inicializan los nodos introduciendo los valores por teclado." << std::endl;
   std::cout << "\tInicialización aleatoria ('random' <nº elementos a generar>): se inicializan el número de nodos especificado con claves aleatorias." << std::endl;
   std::cout << "\tInicialización mediante fichero ('file' <nº elementos a generar> <fichero de entrada>): se inicializan el número de nodos especificado leyendo los valores del fichero proporcionado." << std::endl;
+  std::cout << "-trace <'y'|'n'>: Con esta opción se indica si se quiere mostrar la traza en caso de que se produzca un balanceo (solamente en tipo de árbol 'avl'), mostrando los factores de balaceo, y el tipo de rotación." << std::endl;
   std::cout << std::endl;
 }
 
@@ -41,7 +42,7 @@ void Usage(char* argv[]) {
  * @param[in] opcion: caracter (referencia) que recoge las opciones del usuario para ser evaluadas.
  */
 void Menu (char& opcion) {
-  std::cout << "Práctica 6: TAD Árbol, Algoritmos y Estructuras de Datos Avanzadas 2023-2024, Raúl González Acosta" << std::endl << std::endl;
+  std::cout << "Práctica 7: Árbol AVL, Algoritmos y Estructuras de Datos Avanzadas 2023-2024, Raúl González Acosta" << std::endl << std::endl;
   std::cout << "============== MENÚ DE OPCIONES ==============" << std::endl;
   std::cout << "i. [I]nsertar una clave en el árbol." << std::endl;
   std::cout << "b. [B]uscar una clave en el árbol." << std::endl;
@@ -61,6 +62,7 @@ int main(int argc, char* argv[]) {
   int num_elements = 0;      // Variable para almacenar el número de elementos a generar
   NIF key;                   // Variable para almacenar la clave del nodo
   char opcion;               // Variable donde guardaremos la opción a ser evaluada por el menú del programa
+  bool trace = false;        // Variable para indicar si se quiere mostrar la traza en caso de que se produzca un balanceo
 
   // Si no se han introducido argumentos por línea de comandos, se muestra un mensaje de error y la función que muestra el uso correcto del programa
   if (argc <= 1) {
@@ -112,7 +114,7 @@ int main(int argc, char* argv[]) {
       if (std::string(argv[i + 1]) == "manual") {
         std::cout << "Introduzca una clave a insertar en el árbol (inserte -1 para finalizar):" << std::endl;
         while (std::cin >> key && key != NIF(-1)) {
-          if (tree->insert(key)) { std::cout << "La clave " << key << " se ha insertado correctamente de manera manual en el árbol." << std::endl; }
+          if (tree->insert(key, trace)) { std::cout << "La clave " << key << " se ha insertado correctamente de manera manual en el árbol." << std::endl; }
           else { std::cout << "La clave " << key << " ya existe en el árbol." << std::endl; }
         }
       }
@@ -128,7 +130,7 @@ int main(int argc, char* argv[]) {
         num_elements = std::stoi(argv[i + 2]);
         for (int i = 0; i < num_elements; i++) {
           key = NIF();
-          if (tree->insert(key)) { std::cout << "La clave " << key << " se ha insertado correctamente de manera aleatoria en el árbol." << std::endl; }
+          if (tree->insert(key, trace)) { std::cout << "La clave " << key << " se ha insertado correctamente de manera aleatoria en el árbol." << std::endl; }
           else { std::cout << "La clave " << key << " ya existe en el árbol." << std::endl; }
         }
       }
@@ -155,7 +157,7 @@ int main(int argc, char* argv[]) {
         // Leemos los datos del fichero y los insertamos en el árbol
         for (int i = 0; i < num_elements; i++) {
           input_file >> key;
-          if (tree->insert(key)) { std::cout << "La clave " << key << " se ha insertado correctamente desde el fichero " << filename << " en el árbol." << std::endl; }
+          if (tree->insert(key, trace)) { std::cout << "La clave " << key << " se ha insertado correctamente desde el fichero " << filename << " en el árbol." << std::endl; }
           else { std::cout << "La clave " << key << " ya existe en el árbol." << std::endl; }
         }
         
@@ -166,6 +168,24 @@ int main(int argc, char* argv[]) {
       // Si la forma de introducir los datos no es válida, se muestra un mensaje de error y se finaliza el programa
       else {
         std::cerr << "Error: Forma de introducir los datos no válida." << std::endl << std::endl;
+        Usage(argv);
+        exit(EXIT_FAILURE);
+      }
+    }
+
+    // Opción -trace: Selecciona si se quiere mostrar la traza en caso de que se produzca un balanceo
+    else if (argumento_actual == "-trace") {
+      // Si no se ha especificado si se quiere mostrar la traza, se muestra un mensaje de error y la función que muestra el uso correcto del programa
+      if ((i + 1) > argc) {
+        std::cerr << "Error: Falta argumento de si se quiere mostrar la traza." << std::endl << std::endl;
+        Usage(argv);
+        exit(EXIT_FAILURE);
+      }
+
+      if (std::string(argv[i + 1]) == "y") { trace = true; }
+      else if (std::string(argv[i + 1]) == "n") { trace = false; }
+      else {
+        std::cerr << "Error: Opción de mostrar la traza no válida." << std::endl << std::endl;
         Usage(argv);
         exit(EXIT_FAILURE);
       }
@@ -182,7 +202,7 @@ int main(int argc, char* argv[]) {
         system("clear");
         std::cout << "Introduzca una clave a insertar en el árbol (inserte -1 para finalizar):" << std::endl;
         while (std::cin >> key && key != NIF(-1)) {
-          if (tree->insert(key)) { std::cout << "La clave " << key << " se ha insertado correctamente en el árbol." << std::endl; }
+          if (tree->insert(key, trace)) { std::cout << "La clave " << key << " se ha insertado correctamente en el árbol." << std::endl; }
           else { std::cout << "La clave " << key << " ya existe en el árbol." << std::endl; }
         }
         std::cout << tree << std::endl;
