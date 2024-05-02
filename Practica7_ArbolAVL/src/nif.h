@@ -24,9 +24,10 @@ class NIF {
   //-----------------CONSTRUCTOR (PARAMETRIZADO)-------------------
   NIF(long number) {
     // Comprobamos que el número de NIF tenga 8 dígitos 
-    if ((number < 10000000 || number > 99999999) && (number != -1)) {
+    while ((number < 10000000 || number > 99999999) && (number != -1)) {
       std::cerr << "Error: El número de NIF debe tener 8 dígitos" << std::endl;
-      exit(1);
+      std::cout << "Introduzca un número de NIF válido: ";
+      std::cin >> number;
     }
     number_ = number; 
   }
@@ -50,9 +51,10 @@ class NIF {
     is >> number;
 
     // Comprobamos que el número de NIF tenga 8 dígitos
-    if ((number < 10000000 || number > 99999999) && (number != -1)) {
+    while ((number < 10000000 || number > 99999999) && (number != -1)) {
       std::cerr << "Error: El número de NIF debe tener 8 dígitos" << std::endl;
-      exit(1);
+      std::cout << "Introduzca un número de NIF válido: ";
+      is >> number;
     }
     
     nif.number_ = number;
